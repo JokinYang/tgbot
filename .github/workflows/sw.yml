@@ -23,36 +23,46 @@ jobs:
     - uses: egorpugin/sw-action@master
     - run: ./sw build
 
-  linux:
-    runs-on: ubuntu-22.04
-    container: fedora:latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: prepare
+    - name: Compress files
       run: |
-        sudo dnf -y update
-        sudo dnf -y install flex bison cmake which gcc clang clang-tools-extra lld git \
-          mesa-libGL-devel mesa-libEGL-devel
-    - uses: egorpugin/sw-action@master
-    - run: ./sw build -compiler gcc
+        zip -r package.zip ./*
 
-  macos:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: egorpugin/sw-action@master
-    - name: install
-      run: |
-        brew update
-        brew install flex bison gcc llvm m4
-    #- run: sudo xcode-select --switch /Library/Developer/CommandLineTools
-    - name: build
-      run: |
-        export PATH="/opt/homebrew/opt/m4/bin:$PATH"
-        export PATH="/opt/homebrew/opt/bison/bin:$PATH"
-        export PATH="/opt/homebrew/opt/flex/bin:$PATH"
-        export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-        export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
-        #./sw build -compiler gcc-14
-        ./sw build
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: packaged-files
+        path: package.zip
+
+  # linux:
+  #   runs-on: ubuntu-22.04
+  #   container: fedora:latest
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: prepare
+  #     run: |
+  #       sudo dnf -y update
+  #       sudo dnf -y install flex bison cmake which gcc clang clang-tools-extra lld git \
+  #         mesa-libGL-devel mesa-libEGL-devel
+  #   - uses: egorpugin/sw-action@master
+  #   - run: ./sw build -compiler gcc
+
+  # macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - uses: egorpugin/sw-action@master
+  #   - name: install
+  #     run: |
+  #       brew update
+  #       brew install flex bison gcc llvm m4
+  #   #- run: sudo xcode-select --switch /Library/Developer/CommandLineTools
+  #   - name: build
+  #     run: |
+  #       export PATH="/opt/homebrew/opt/m4/bin:$PATH"
+  #       export PATH="/opt/homebrew/opt/bison/bin:$PATH"
+  #       export PATH="/opt/homebrew/opt/flex/bin:$PATH"
+  #       export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+  #       export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
+  #       #./sw build -compiler gcc-14
+  #       ./sw build
         
